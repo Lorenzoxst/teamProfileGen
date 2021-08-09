@@ -54,8 +54,43 @@ const internQuestions = [
 
 const additionalEmployee = [
     {
-        message: `Is their an employee whose information youd like to capture?`,
-        type: `input`,
+        message: `Is their another employee whose information you'd like to capture?`,
+        type: `confirm`,
         name: `additionalEmployee`
     },
-]
+];
+
+function writeToFile(fileName, data) {
+    return fs.writeFileSync(path.join(process.cwd(), fileName), data);
+}
+
+function question() {
+    inquirer.prompt(initialQuestion)
+        .then((data) => {
+            if (data.name === 'Manager') {
+                inquirer.prompt(generalQuestions);
+                inquirer.prompt(managerQuestion);
+            } else if (data.name === 'Engineer') {
+                inquirer.prompt(generalQuestions);
+                inquirer.prompt(engineerQuestions);
+            } else if (data.name === 'Intern') {
+                inquirer.prompt(generalQuestions);
+                inquirer.prompt(internQuestions);
+            } else {
+                inquirer.prompt(generalQuestions);
+        }})
+        inquirer.prompt(additionalEmployee)
+}
+
+function init() {
+    question()
+        .then((data) => {
+            do {question()}
+            while (data.additionalEmployee);
+        })
+        .then((data) =>{
+            writeToFile('./dist/Profile_Generator.html', generateMarkdown( {...data } ));
+        })
+}
+
+init();
